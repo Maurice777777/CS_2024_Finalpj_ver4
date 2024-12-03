@@ -138,7 +138,6 @@ Game::game_init() {
 
 	/*-----*/
 	DC->hero->init();
-	DC->bullet->init();
 	/*-----*/
 
 	// game start
@@ -257,7 +256,6 @@ Game::game_draw() {
 			DC->level->draw();
 			/*-----*/
 			DC->hero->draw();
-			DC->bullet->draw();
 			/*-----*/
 			ui->draw();
 			OC->draw();

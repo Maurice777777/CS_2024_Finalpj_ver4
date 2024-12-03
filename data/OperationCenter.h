@@ -30,10 +30,14 @@ private:
 	void _update_towerBullet();
 	void _update_monster_towerBullet();
 	void _update_monster_player();
+	//void _update_hero();
+	void _update_hero_bullet();
 private:
 	void _draw_monster();
 	void _draw_tower();
 	void _draw_towerBullet();
+	void _draw_hero();
+	void _draw_hero_bullet();
 };
 
 #endif

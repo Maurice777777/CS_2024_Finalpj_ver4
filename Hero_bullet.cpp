@@ -14,7 +14,7 @@ Hero_bullet::Hero_bullet(Point start, double speed, Direction direction)
 
 void Hero_bullet::init() {
     GIFCenter *GIFC = GIFCenter::get_instance();
-    gif = GIFC->get("./assets/gif/Hero/fireball.gif"); // 這裡是你子彈 GIF 的路徑
+    gif = GIFC->get("./assets/gif/Hero/fireball.gif"); // 子彈 GIF 的路徑
 }
 
 void Hero_bullet::update() {

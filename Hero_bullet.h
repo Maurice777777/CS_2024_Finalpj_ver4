@@ -15,10 +15,10 @@ enum class Direction {
 class Hero_bullet {
 public:
     Hero_bullet(Point start, double speed, Direction direction);
-    void update(); // 更新位置
-    void draw(); // 繪製子彈
+    void update(); 
+    void draw(); 
     void init();
-    bool is_out_of_bound() const; // 檢查是否超出視窗範圍
+    bool is_out_of_bound() const; 
     Point get_position() const; // 獲取子彈位置
     double get_damage() const; // 獲取子彈傷害值
     void setGifPath(const std::string& path);
@@ -26,7 +26,7 @@ public:
 private:
     Point position;
     double speed;
-    Direction direction; // 用於確定移動方向
+    Direction direction; 
     double damage;
     std::string gifPath;
     ALGIF_ANIMATION* gif;

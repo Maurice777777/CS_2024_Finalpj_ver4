@@ -96,11 +96,11 @@ public:
 	 * @brief Raw list of Bullet objects.
 	 * @see Bullet
 	 */
+	//std::vector<Hero*> hero;
 	std::vector<Bullet*> towerBullets;
-	std::vector<Hero_bullet*>herobullets;
 	/*---------*/
+	std::vector<Hero_bullet*>herobullets;
 	Hero *hero;
-	Hero_bullet *bullet;
 	/*--------*/
 private:
 	DataCenter();

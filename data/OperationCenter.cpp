@@ -4,6 +4,8 @@
 #include "../towers/Tower.h"
 #include "../towers/Bullet.h"
 #include "../Player.h"
+#include "../Hero.h"
+#include "../Hero_bullet.h"
 
 void OperationCenter::update() {
 	// Update monsters.
@@ -16,6 +18,11 @@ void OperationCenter::update() {
 	_update_monster_towerBullet();
 	// If any monster reaches the end, hurt the player and delete the monster.
 	_update_monster_player();
+
+	/*---------*/
+	//_update_hero();
+	_update_hero_bullet();
+	/*---------*/
 }
 
 void OperationCenter::_update_monster() {
@@ -30,6 +37,7 @@ void OperationCenter::_update_tower() {
 		tower->update();
 }
 
+
 void OperationCenter::_update_towerBullet() {
 	std::vector<Bullet*> &towerBullets = DataCenter::get_instance()->towerBullets;
 	for(Bullet *towerBullet : towerBullets)
@@ -42,6 +50,26 @@ void OperationCenter::_update_towerBullet() {
 		}
 	}
 }
+
+/*--------------revise--------------*/
+void OperationCenter::_update_hero_bullet() {
+    std::vector<Hero_bullet*> &heroBullets = DataCenter::get_instance()->herobullets;
+    
+    // Update all hero bullets
+    for (Hero_bullet *heroBullet : heroBullets) {
+        heroBullet->update();
+    }
+
+	// Check and remove bullets that are out of bounds
+    for (size_t i = 0; i < heroBullets.size(); ++i) {
+        if (heroBullets[i]->is_out_of_bound()) {
+            delete heroBullets[i]; // Clean up memory
+            heroBullets.erase(heroBullets.begin() + i); // Remove from vector
+            --i; // Adjust the index after erasure
+        }
+    }
+}
+/*--------------revise--------------*/
 
 void OperationCenter::_update_monster_towerBullet() {
 	DataCenter *DC = DataCenter::get_instance();
@@ -105,4 +133,10 @@ void OperationCenter::_draw_towerBullet() {
 	std::vector<Bullet*> &towerBullets = DataCenter::get_instance()->towerBullets;
 	for(Bullet *towerBullet : towerBullets)
 		towerBullet->draw();
+}
+
+void OperationCenter::_draw_hero_bullet() {
+	std::vector<Hero_bullet*> &herobullets = DataCenter::get_instance()->herobullets;
+	for(Hero_bullet *herobullet : herobullets)
+		herobullet->draw();
 }
