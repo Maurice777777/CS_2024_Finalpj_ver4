@@ -115,6 +115,7 @@ void OperationCenter::draw() {
 	_draw_monster();
 	_draw_tower();
 	_draw_towerBullet();
+	_draw_hero_bullet();
 }
 
 void OperationCenter::_draw_monster() {

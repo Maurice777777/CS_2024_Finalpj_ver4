@@ -214,7 +214,6 @@ Game::game_update() {
 		ui->update();
 		/*----*/
 		DC->hero->update();
-		DC->hero->update();
 		/*----*/ 
 		if(state != STATE::START) {
 			DC->level->update();

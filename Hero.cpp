@@ -4,7 +4,8 @@
 #include "algif5/algif.h"
 #include "shapes/Rectangle.h"
 #include "Hero_bullet.h"
-
+#include <iostream>
+#include<cmath>
 namespace HeroSetting
 {
     static constexpr char gif_root_path[50]="./assets/gif/Hero";
@@ -35,10 +36,6 @@ void Hero::init()
                                 DC->window_height/2+gif->height});
 }
 
-#include "Hero.h"
-#include "Hero_bullet.h"
-#include "data/DataCenter.h"
-#include <cmath>
 
 void Hero::fire_bullet() {
     DataCenter *DC = DataCenter::get_instance();
@@ -68,6 +65,11 @@ void Hero::fire_bullet() {
     );
 
     DC->herobullets.emplace_back(bullet);
+
+    // std::cout << "Bullet created at position: (" 
+    //           << shape->center_x() << ", " 
+    //           << shape->center_y() << ") in direction " 
+    //           << static_cast<int>(bullet_direction) << std::endl;
 }
 
 
@@ -85,6 +87,8 @@ void Hero::draw()
 void Hero::update()
 {
     DataCenter *DC = DataCenter::get_instance();
+    static int fireCooldown=0;
+
     if(DC->key_state[ALLEGRO_KEY_W])
     {
         shape->update_center_y(shape->center_y()-speed);
@@ -104,5 +108,13 @@ void Hero::update()
     {
         shape->update_center_x(shape->center_x()+speed);
         state = HeroState::RIGHT;
+    }
+
+    // Fire bullet if cooldown allows
+    if (fireCooldown == 0) {
+        fire_bullet();
+        fireCooldown = 30; // Cooldown duration in frames
+    } else {
+        fireCooldown--;
     }
 }
