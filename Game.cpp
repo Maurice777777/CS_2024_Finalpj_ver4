@@ -17,6 +17,7 @@
 /*----------*/
 #include "Hero.h"
 #include "Hero_bullet.h"
+#include<iostream>
 /*----------*/
 
 // fixed settings
@@ -30,12 +31,47 @@ constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
  * @details The function processes all allegro events and update the event state to a generic data storage (i.e. DataCenter).
  * For timer event, the game_update and game_draw function will be called if and only if the current is timer.
  */
+SceneStart::SceneStart() {
+    background = al_load_bitmap("./assets/image/Mywife.jpg");
+    font = al_load_font("./assets/font/courbd.ttf", 24, 0);
+    menuIndex = 0;
+}
+
+SceneStart::~SceneStart() {
+    if (background) al_destroy_bitmap(background);
+    if (font) al_destroy_font(font);
+}
+
+void SceneStart::update() {
+    DataCenter* DC = DataCenter::get_instance();
+    if (DC->key_state[ALLEGRO_KEY_DOWN] && !DC->prev_key_state[ALLEGRO_KEY_DOWN]) {
+        menuIndex = (menuIndex + 1) % 3;
+    }
+    if (DC->key_state[ALLEGRO_KEY_UP] && !DC->prev_key_state[ALLEGRO_KEY_UP]) {
+        menuIndex = (menuIndex - 1 + 3) % 3;
+    }
+}
+
+void SceneStart::draw() {
+    al_draw_bitmap(background, 0, 0, 0);
+    const char* options[] = {"START", "MODE", "SETTING"};
+    for (int i = 0; i < 3; ++i) {
+        ALLEGRO_COLOR color = (i == menuIndex) ? al_map_rgb(255, 0, 0) : al_map_rgb(255, 255, 255);
+        al_draw_text(font, color, 400, 200 + i * 50, ALLEGRO_ALIGN_CENTER, options[i]);
+    }
+}
+
+int SceneStart::getMenuIndex() const {
+    return menuIndex;
+}
+
 void Game::execute() 
 {
 	DataCenter *DC = DataCenter::get_instance();
 	// main game loop
 	bool run = true;
-	while(run) {
+	while(run) 
+	{
 		// process all events here
 		al_wait_for_event(event_queue, &event);
 		switch(event.type) 
@@ -131,6 +167,7 @@ void Game::game_init()
 	SoundCenter *SC = SoundCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
+
 	// set window icon
 	game_icon = IC->get(game_icon_img_path);
 	al_set_display_icon(display, game_icon);
@@ -154,6 +191,7 @@ void Game::game_init()
 
 	/*-----*/
 	DC->hero->init();
+	startScene = new SceneStart();
 	/*-----*/
 
 	// game start
@@ -169,6 +207,7 @@ void Game::game_init()
  * @return Whether the game should keep running (true) or reaches the termination criteria (false).
  * @see Game::STATE
  */
+
 bool Game::game_update() 
 {
 	DataCenter *DC = DataCenter::get_instance();
@@ -180,24 +219,24 @@ bool Game::game_update()
 	{
 		case STATE::START: 
 		{
-			static bool is_played = false;
-			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
-			if(!is_played) 
-			{
-				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				DC->level->load_level(1);
-				is_played = true;
-			}
-
-			if(!SC->is_playing(instance)) 
-			{
-				debug_log("<Game> state: change to LEVEL\n");
-				state = STATE::LEVEL;
-			}
+			startScene->update();
+            if (DC->key_state[ALLEGRO_KEY_ENTER] && !DC->prev_key_state[ALLEGRO_KEY_ENTER]) {
+                if (startScene->getMenuIndex() == 0) 
+				{ // 選擇 "START"
+                    debug_log("<Game> state: change to LEVEL\n");
+                    state = STATE::LEVEL;
+                    DC->level->load_level(1);
+					DC->monsters.clear(); // 清空舊怪物
+            		//static bool BGM_played = false;   // 重置背景音樂播放標誌
+                }
+            }
 			break;
 		} 
 		case STATE::LEVEL: 
 		{
+			OC->update();
+			DC->hero->update();
+			//DC->level->update();
 			static bool BGM_played = false;
 			if(!BGM_played) 
 			{
@@ -235,22 +274,27 @@ bool Game::game_update()
 		} 
 		case STATE::END: 
 		{
+			// debug_log("Game over. Displaying end screen.\n");
+    		// // 可以添加結束畫面邏輯
+    		// al_clear_to_color(al_map_rgb(0, 0, 0));
+    		// al_draw_text(FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
+            //      		DC->window_width / 2.0, DC->window_height / 2.0,
+            //      	ALLEGRO_ALIGN_CENTER, "Game Over");
+    		// al_flip_display();
+    		// al_rest(3.0); // 停留 3 秒
 			return false;
 		}
 	}
 	// If the game is not paused, we should progress update.
 	if(state != STATE::PAUSE) 
 	{
-		DC->player->update();
 		SC->update();
-		ui->update();
-		/*----*/
-		DC->hero->update();
-		/*----*/ 
 		if(state != STATE::START) 
 		{
 			DC->level->update();
-			OC->update();
+			ui->update();
+			DC->player->update();
+			printf("It's in STATE:LEVEL\n");
 		}
 	}
 	// game_update is finished. The states of current frame will be previous states of the next frame.
@@ -262,6 +306,7 @@ bool Game::game_update()
 /**
  * @brief Draw the whole game and objects.
  */
+
 void Game::game_draw() 
 {
 	DataCenter *DC = DataCenter::get_instance();
@@ -270,36 +315,31 @@ void Game::game_draw()
 
 	// Flush the screen first.
 	al_clear_to_color(al_map_rgb(100, 100, 100));
-	if(state != STATE::END) 
+	switch(state) 
 	{
-		// background
-		al_draw_bitmap(background, 0, 0, 0);
-		if(DC->game_field_length < DC->window_width)
-			al_draw_filled_rectangle(
-				DC->game_field_length, 0,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
-		if(DC->game_field_length < DC->window_height)
-			al_draw_filled_rectangle(
-				0, DC->game_field_length,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
-		// user interface
-		if(state != STATE::START) {
-			DC->level->draw();
-			/*-----*/
-			DC->hero->draw();
-			/*-----*/
-			ui->draw();
-			OC->draw();
-		}
-	}
-	switch(state) {
 		case STATE::START: 
 		{
+			startScene->draw();
+			break;
 		} 
 		case STATE::LEVEL: 
 		{
+			al_draw_bitmap(background, 0, 0, 0);
+			if(DC->game_field_length < DC->window_width)
+				al_draw_filled_rectangle(
+					DC->game_field_length, 0,
+					DC->window_width, DC->window_height,
+					al_map_rgb(100, 100, 100));
+			if(DC->game_field_length < DC->window_height)
+				al_draw_filled_rectangle(
+					0, DC->game_field_length,
+					DC->window_width, DC->window_height,
+					al_map_rgb(100, 100, 100));
+			
+			DC->level->draw();
+			DC->hero->draw();
+			ui->draw();
+			OC->draw();
 			break;
 		} 
 		case STATE::PAUSE: 
@@ -314,6 +354,8 @@ void Game::game_draw()
 		} 
 		case STATE::END: 
 		{
+			printf("In draw, STATE::END\n");
+			//break;
 		}
 	}
 	al_flip_display();
@@ -321,6 +363,7 @@ void Game::game_draw()
 
 Game::~Game() 
 {
+	delete startScene;
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
