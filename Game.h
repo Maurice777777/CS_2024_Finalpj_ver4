@@ -3,6 +3,7 @@
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_audio.h>
 #include "UI.h"
 
 /**
@@ -49,12 +50,14 @@ class Game
 		ALLEGRO_EVENT event;
 		ALLEGRO_BITMAP *game_icon;
 		ALLEGRO_BITMAP *background;
+		ALLEGRO_BITMAP* endBackground;
 	private:
 		ALLEGRO_DISPLAY *display;
 		ALLEGRO_TIMER *timer;
 		ALLEGRO_EVENT_QUEUE *event_queue;
 		UI *ui;
 	 	SceneStart* startScene; 
+		ALLEGRO_SAMPLE_INSTANCE* backgroundMusic;
 };
 
 #endif

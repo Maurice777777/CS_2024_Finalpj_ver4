@@ -19,6 +19,7 @@ public:
 	void load_level(int lvl);
 	void update();
 	void draw();
+	void reset();
 	bool is_onroad(const Rectangle &region);
 	Rectangle grid_to_region(const Point &grid) const;
 	const std::vector<Point> &get_road_path() const

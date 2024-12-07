@@ -188,11 +188,10 @@ void Game::game_init()
 	ui->init();
 
 	DC->level->init();
-
-	/*-----*/
 	DC->hero->init();
 	startScene = new SceneStart();
-	/*-----*/
+	backgroundMusic = nullptr;
+	endBackground = al_load_bitmap("./assets/image/Jerry.jpg");
 
 	// game start
 	background = IC->get(background_img_path);
@@ -220,6 +219,7 @@ bool Game::game_update()
 		case STATE::START: 
 		{
 			startScene->update();
+			//static bool BGM_played = false;
             if (DC->key_state[ALLEGRO_KEY_ENTER] && !DC->prev_key_state[ALLEGRO_KEY_ENTER]) {
                 if (startScene->getMenuIndex() == 0) 
 				{ // 選擇 "START"
@@ -240,7 +240,7 @@ bool Game::game_update()
 			static bool BGM_played = false;
 			if(!BGM_played) 
 			{
-				background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+				backgroundMusic = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
 
@@ -274,19 +274,29 @@ bool Game::game_update()
 		} 
 		case STATE::END: 
 		{
-			// debug_log("Game over. Displaying end screen.\n");
-    		// // 可以添加結束畫面邏輯
-    		// al_clear_to_color(al_map_rgb(0, 0, 0));
-    		// al_draw_text(FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
-            //      		DC->window_width / 2.0, DC->window_height / 2.0,
-            //      	ALLEGRO_ALIGN_CENTER, "Game Over");
-    		// al_flip_display();
-    		// al_rest(3.0); // 停留 3 秒
-			return false;
+			 DataCenter *DC = DataCenter::get_instance();
+			 if (backgroundMusic) 
+			 {
+        		al_stop_sample_instance(backgroundMusic);
+        		al_destroy_sample_instance(backgroundMusic);
+        		backgroundMusic = nullptr;
+    		 }
+
+    		// 按下Enter 後返回 START
+    		if (DC->key_state[ALLEGRO_KEY_SPACE] && !DC->prev_key_state[ALLEGRO_KEY_SPACE]) 
+			{
+        		debug_log("<Game> state: change to START\n");
+        		state = STATE::START;
+				DC->player->reset();
+    			DC->level->reset();
+				DC->monsters.clear();
+				DC->hero->reset();
+    		}
+           return true;
 		}
 	}
 	// If the game is not paused, we should progress update.
-	if(state != STATE::PAUSE) 
+	if(state != STATE::PAUSE && state != STATE::END) 
 	{
 		SC->update();
 		if(state != STATE::START) 
@@ -354,8 +364,22 @@ void Game::game_draw()
 		} 
 		case STATE::END: 
 		{
-			printf("In draw, STATE::END\n");
-			//break;
+			 al_clear_to_color(al_map_rgb(0, 0, 0));
+
+    		// 繪製結束場景背景圖片
+    		if (endBackground) {al_draw_bitmap(endBackground, 0, 0, 0);}
+
+    		// 繪製文字 "Game Over"
+    		al_draw_text(FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
+                 	     DC->window_width / 2.0, DC->window_height / 2.0 - 50,
+                 		 ALLEGRO_ALIGN_CENTER, "Game Over");
+
+    		al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(200, 200, 200),
+                 		 DC->window_width / 2.0, DC->window_height / 2.0 + 50,
+                 	     ALLEGRO_ALIGN_CENTER, "Press Space to play again.");
+
+    		al_flip_display();
+    		break;
 		}
 	}
 	al_flip_display();
@@ -364,7 +388,35 @@ void Game::game_draw()
 Game::~Game() 
 {
 	delete startScene;
+	if (endBackground) al_destroy_bitmap(endBackground);
+	if (backgroundMusic) 
+	{
+        al_stop_sample_instance(backgroundMusic);
+        al_destroy_sample_instance(backgroundMusic);
+    }
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event_queue);
 }
+/*
+                   _ooOoo_
+                  o8888888o
+                  88" . "88
+                  (| -_- |)
+                  O\  =  /O
+               ____/`---'\____
+             .'  \\|     |//  `.
+            /  \\|||  :  |||//  \
+           /  _||||| -:- |||||-  \
+           |   | \\\  -  /// |   |
+           | \_|  ''\---/''  |   |
+           \  .-\__  `-`  ___/-. /
+         ___`. .'  /--.--\  `. . __
+      ."" '<  `.___\_<|>_/___.'  >'"".
+     | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+     \  \ `-.   \_ __\ /__ _/   .-` /  /
+======`-.____`-.___\_____/___.-`____.-'======
+                   `=---='
+
+佛祖保佑       永無Bug
+*/

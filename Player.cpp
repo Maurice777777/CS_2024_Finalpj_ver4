@@ -21,3 +21,9 @@ void Player::update() {
 		coin_counter = coin_freq;
 	}
 }
+
+void Player::reset()
+{
+	HP=3;
+	coin=100;
+}

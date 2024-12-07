@@ -118,3 +118,16 @@ void Hero::update()
         fireCooldown--;
     }
 }
+
+void Hero::reset() 
+{
+    DataCenter *DC = DataCenter::get_instance();
+
+    shape->update_center_x(DC->window_width / 2);
+    shape->update_center_y(DC->window_height / 2);
+
+    state = HeroState::FRONT;
+
+    std::cout << "Hero position reset to center.\n";
+}
+

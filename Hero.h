@@ -19,6 +19,7 @@ class Hero : public Object
         void init();
         void update();
         void draw();
+        void reset();
     private:
         void fire_bullet();
         HeroState state = HeroState::FRONT;

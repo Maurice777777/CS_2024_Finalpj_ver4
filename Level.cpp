@@ -118,3 +118,17 @@ Level::grid_to_region(const Point &grid) const {
 	int y2 = y1 + LevelSetting::grid_size[level];
 	return Rectangle{x1, y1, x2, y2};
 }
+
+void Level::reset() {
+    
+    level = -1;
+    grid_w = -1;
+    grid_h = -1;
+    monster_spawn_counter = 0;
+
+    
+    num_of_monsters.clear();
+    road_path.clear();
+
+    debug_log("<Level> Level has been reset.\n");
+}
