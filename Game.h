@@ -46,6 +46,7 @@ class Game
 			PAUSE, // -> LEVEL
 			END
 		};
+		//static bool BGM_played;
 		STATE state;
 		ALLEGRO_EVENT event;
 		ALLEGRO_BITMAP *game_icon;
@@ -58,6 +59,7 @@ class Game
 		UI *ui;
 	 	SceneStart* startScene; 
 		ALLEGRO_SAMPLE_INSTANCE* backgroundMusic;
+		void manage_background_music(bool play);
 };
 
 #endif

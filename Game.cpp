@@ -65,6 +65,32 @@ int SceneStart::getMenuIndex() const {
     return menuIndex;
 }
 
+void Game::manage_background_music(bool play) 
+{
+    SoundCenter* SC = SoundCenter::get_instance();
+
+    if (play) 
+    {
+        if (!backgroundMusic) 
+        {
+            // 如果音樂不存在，創建並播放
+            backgroundMusic = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+        } 
+        else 
+        {
+            // 如果音樂已經存在但被停止，重新播放
+            al_set_sample_instance_playing(backgroundMusic, true);
+        }
+    } 
+    else 
+    {
+        if (backgroundMusic) 
+        {
+            al_set_sample_instance_playing(backgroundMusic, false);
+        }
+    }
+}
+
 void Game::execute() 
 {
 	DataCenter *DC = DataCenter::get_instance();
@@ -237,12 +263,7 @@ bool Game::game_update()
 			OC->update();
 			DC->hero->update();
 			//DC->level->update();
-			static bool BGM_played = false;
-			if(!BGM_played) 
-			{
-				backgroundMusic = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
-				BGM_played = true;
-			}
+			manage_background_music(true);
 
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) 
 			{
@@ -275,12 +296,7 @@ bool Game::game_update()
 		case STATE::END: 
 		{
 			 DataCenter *DC = DataCenter::get_instance();
-			 if (backgroundMusic) 
-			 {
-        		al_stop_sample_instance(backgroundMusic);
-        		al_destroy_sample_instance(backgroundMusic);
-        		backgroundMusic = nullptr;
-    		 }
+			 manage_background_music(false);
 
     		// 按下Enter 後返回 START
     		if (DC->key_state[ALLEGRO_KEY_SPACE] && !DC->prev_key_state[ALLEGRO_KEY_SPACE]) 
