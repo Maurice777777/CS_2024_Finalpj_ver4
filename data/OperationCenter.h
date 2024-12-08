@@ -8,6 +8,9 @@
 class OperationCenter
 {
 	public:
+		double spawn_start_time = 0.0;	
+		bool delay_in_progress = false;
+	public:
 		static OperationCenter *get_instance() 
 		{
 			static OperationCenter OC;
@@ -23,6 +26,9 @@ class OperationCenter
 	 	* @details Calls all other draw functions.
 	 	*/
 		void draw();
+		/*------------------*/
+		void reset_enemies();
+		/*------------------*/
 	private:
 		OperationCenter() {}
 	private:
@@ -36,6 +42,10 @@ class OperationCenter
 		/*------revise-------*/
 		void _update_enemy_combat();
 		void _spawn_enemy_around_hero();
+		
+		double enemy_spawn_delay_start = 0.0; // 記錄生成開始的時間
+    	
+		bool enemies_spawned = false;
 		/*------revise-------*/
 	private:
 		void _draw_monster();

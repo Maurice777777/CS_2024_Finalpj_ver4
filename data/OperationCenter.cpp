@@ -11,17 +11,35 @@
 #include <cmath>
 #define PI 3.14159265358979323846
 
+void OperationCenter::reset_enemies() {
+    DataCenter* DC = DataCenter::get_instance();
+	//static bool enemies_spawned = false;
+	
+    for (EnemyCombat* enemy : DC->enemycombat) {
+        // 使用敵人的初始位置重置
+		delete enemy;
+    }
+	DC->enemycombat.clear();
+	delay_in_progress = false; // 重置延遲邏輯
+    enemy_spawn_delay_start = 0.0; // 重置計時器
+	enemies_spawned = false;
+	//_spawn_enemy_around_hero();
+}
+
+
+
 void OperationCenter::_spawn_enemy_around_hero() 
 {
     DataCenter* DC = DataCenter::get_instance();
-    Hero* hero = DC->hero; // 獲取角色實例
+    Hero* hero = DC->hero; 
     double hero_x = hero->shape->center_x();
     double hero_y = hero->shape->center_y();
 
-    double radius = 100.0; // 設定敵人與角色的距離
+    double radius = 300.0; // 設定敵人與角色的距離
     int directions = 8;    // 八個方位
 
-    for (int i = 0; i < directions; ++i) {
+    for (int i = 0; i < directions; ++i) 
+	{
         double angle = i * (PI / 4); // 每 45 度一個方位
         double spawn_x = hero_x + radius * cos(angle);
         double spawn_y = hero_y + radius * sin(angle);
@@ -35,6 +53,26 @@ void OperationCenter::_spawn_enemy_around_hero()
 
 void OperationCenter::update() 
 {
+
+	//static bool enemies_spawned = false;
+    if (!enemies_spawned) 
+	{
+        if (spawn_start_time == 0.0) 
+		{
+            spawn_start_time = al_get_time(); // 記錄當前時間作為開始時間
+			enemy_spawn_delay_start = al_get_time(); 
+			delay_in_progress = true;
+		}
+
+        // 檢查是否已經過了 5 秒
+        if (al_get_time() -  enemy_spawn_delay_start >= 2.0) 
+		{
+            _spawn_enemy_around_hero(); // 生成敵人
+            delay_in_progress = false;
+			enemies_spawned = true;    
+        }
+    }
+
 	// Update monsters.
 	_update_monster();
 	// Update towers.
@@ -49,13 +87,6 @@ void OperationCenter::update()
 	/*---------*/
 	_update_hero_bullet();
 	_update_enemy_combat();
-
-	static bool enemies_spawned = false;
-    if (!enemies_spawned) 
-	{
-        _spawn_enemy_around_hero();
-        enemies_spawned = true; // 確保只生成一次
-    }
 	/*---------*/
 }
 

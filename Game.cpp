@@ -17,6 +17,7 @@
 /*----------*/
 #include "Hero.h"
 #include "Hero_bullet.h"
+#include "./Enemy/Enemy_combat.h"
 #include<iostream>
 /*----------*/
 
@@ -250,6 +251,7 @@ bool Game::game_update()
                 if (startScene->getMenuIndex() == 0) 
 				{ // 選擇 "START"
                     debug_log("<Game> state: change to LEVEL\n");
+					OC->reset_enemies();
                     state = STATE::LEVEL;
                     DC->level->load_level(1);
 					DC->monsters.clear(); // 清空舊怪物
@@ -298,6 +300,12 @@ bool Game::game_update()
 			 DataCenter *DC = DataCenter::get_instance();
 			 manage_background_music(false);
 
+			for (EnemyCombat* enemy : DC->enemycombat) 
+        	{
+            	delete enemy; // 釋放記憶體
+        	}
+        	DC->enemycombat.clear(); 
+
     		// 按下Enter 後返回 START
     		if (DC->key_state[ALLEGRO_KEY_SPACE] && !DC->prev_key_state[ALLEGRO_KEY_SPACE]) 
 			{
@@ -307,6 +315,10 @@ bool Game::game_update()
     			DC->level->reset();
 				DC->monsters.clear();
 				DC->hero->reset();
+				OC->spawn_start_time = 0.0;
+    			OC->delay_in_progress = false;
+				//DC->enemycombat.clear();
+				
     		}
            return true;
 		}
