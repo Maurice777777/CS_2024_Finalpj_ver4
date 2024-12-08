@@ -7,37 +7,45 @@
  */
 class OperationCenter
 {
-public:
-	static OperationCenter *get_instance() {
-		static OperationCenter OC;
-		return &OC;
-	}
-	/**
-	 * @brief Highest level update function.
-	 * @details Calls all other update functions.
-	 */
-	void update();
-	/**
-	 * @brief Highest level draw function.
-	 * @details Calls all other draw functions.
-	 */
-	void draw();
-private:
-	OperationCenter() {}
-private:
-	void _update_monster();
-	void _update_tower();
-	void _update_towerBullet();
-	void _update_monster_towerBullet();
-	void _update_monster_player();
-	//void _update_hero();
-	void _update_hero_bullet();
-private:
-	void _draw_monster();
-	void _draw_tower();
-	void _draw_towerBullet();
-	void _draw_hero();
-	void _draw_hero_bullet();
+	public:
+		static OperationCenter *get_instance() 
+		{
+			static OperationCenter OC;
+			return &OC;
+		}
+		/**
+	 	* @brief Highest level update function.
+	 	* @details Calls all other update functions.
+	 	*/
+		void update();
+		/**
+	 	* @brief Highest level draw function.
+	 	* @details Calls all other draw functions.
+	 	*/
+		void draw();
+	private:
+		OperationCenter() {}
+	private:
+		void _update_monster();
+		void _update_tower();
+		void _update_towerBullet();
+		void _update_monster_towerBullet();
+		void _update_monster_player();
+		//void _update_hero();
+		void _update_hero_bullet();
+		/*------revise-------*/
+		void _update_enemy_combat();
+		void _spawn_enemy_around_hero();
+		/*------revise-------*/
+	private:
+		void _draw_monster();
+		void _draw_tower();
+		void _draw_towerBullet();
+		void _draw_hero();
+		void _draw_hero_bullet();
+		/*------revise-----*/
+		void _draw_enemy_combat();
+		/*------revise-----*/
 };
 
 #endif

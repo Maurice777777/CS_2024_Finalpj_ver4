@@ -8,6 +8,7 @@
 /*---------*/
 #include "../Hero.h"
 #include "../Hero_bullet.h"
+#include "../Enemy/Enemy_combat.h"
 /*---------*/
 
 // fixed settings
@@ -18,7 +19,8 @@ namespace DataSetting {
 	constexpr int game_field_length = 600;
 }
 
-DataCenter::DataCenter() {
+DataCenter::DataCenter() 
+{
 	this->FPS = DataSetting::FPS;
 	this->window_width = DataSetting::window_width;
 	this->window_height = DataSetting::window_height;
@@ -51,5 +53,9 @@ DataCenter::~DataCenter() {
 	for(Hero_bullet *&hb : herobullets)
 	{
 		delete hb;
+	}
+	for(EnemyCombat *&ec : enemycombat)
+	{
+		delete ec;
 	}
 }

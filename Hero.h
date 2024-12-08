@@ -20,11 +20,15 @@ class Hero : public Object
         void update();
         void draw();
         void reset();
+
+        // double get_center_x() const { return shape->center_x(); }
+        // double get_center_y() const { return shape->center_y(); }
     private:
         void fire_bullet();
         HeroState state = HeroState::FRONT;
         double speed = 5;
         std::map<HeroState,std::string>gifPath;
+        //std::unique_ptr<Rectangle> shape;
 };
 
 #endif

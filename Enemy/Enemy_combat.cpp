@@ -11,7 +11,7 @@ EnemyCombat* EnemyCombat::create_mons(int x, int y)
 }
 
 EnemyCombat::EnemyCombat(int x, int y, EnemyCombatState state, int direction)
-    : state(state), shape(nullptr), direction(direction), gifPath(""), monfix_erase(false) 
+    : state(state), shape(nullptr), direction(direction), gifPath(""), monclose_erase(false) 
 {
     gifPath = generate_gif_path(state, direction);
 
@@ -51,8 +51,9 @@ void EnemyCombat::update()
     switch (state) 
     {
         case EnemyCombatState::APPEAR:
-            if (gif->done) {
-                state = EnemyCombatState::RUN; // 假設進入 RUN 狀態
+            if (gif->done) 
+            {
+                //state = EnemyCombatState::RUN; // 假設進入 RUN 狀態
                 gifPath = generate_gif_path(state, direction);
             }
             break;
@@ -60,7 +61,7 @@ void EnemyCombat::update()
         case EnemyCombatState::DIE:
             if (gif->done) 
             {
-                monfix_erase = true;
+                monclose_erase = true;
             }
             break;
 
@@ -90,4 +91,9 @@ int EnemyCombat::get_height()
     GIFCenter* GIFC = GIFCenter::get_instance();
     ALGIF_ANIMATION* gif = GIFC->get(gifPath);
     return gif->height;
+}
+
+bool EnemyCombat::be_killed()const
+{
+    return (HP<=0 || state==EnemyCombatState::DIE);
 }

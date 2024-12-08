@@ -36,7 +36,6 @@ void Hero::init()
                                 DC->window_height/2+gif->height});
 }
 
-
 void Hero::fire_bullet() {
     DataCenter *DC = DataCenter::get_instance();
     Direction bullet_direction;

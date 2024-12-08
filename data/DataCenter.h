@@ -7,6 +7,7 @@
 #include <allegro5/mouse.h>
 #include "../shapes/Point.h"
 #include "../Hero_bullet.h"
+#include "../Enemy/Enemy_combat.h"
 
 class Player;
 class Level;
@@ -98,10 +99,13 @@ public:
 	 */
 	//std::vector<Hero*> hero;
 	std::vector<Bullet*> towerBullets;
-	/*---------*/
 	std::vector<Hero_bullet*>herobullets;
 	Hero *hero;
-	/*--------*/
+
+	/*------revise--------*/
+	std::vector<EnemyCombat*> enemycombat;
+	/*------revise--------*/
+
 private:
 	DataCenter();
 };
